@@ -1,0 +1,4 @@
+# Alphabetical list of file types to use with LFS
+# - Use globs for extensions on case sensitive file systems
+# - Add new extensions with `git lfs track *.[aA][bB][cC]`
+*.[oO][tT][dD] filter=lfs diff=lfs merge=lfs -text

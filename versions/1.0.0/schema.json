@@ -1,0 +1,431 @@
+
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://hiddenlevel.com/schemas/otd_record_schema.json",
+  "title": "OtdRecord",
+  "description": "A schema definition for an OTD record.",
+  "type": "object",
+  "properties": {
+    "aux": {
+      "description": "The auxiliary bucket is a generic “catch all” container that can be used to house any detailed sensor data necessary. It is free form and so should not be counted on by parsers.  In general if a field is set, it should be considered applicable from that timestamp forward even if it is excluded from later records (as a space savings on static data).  If aux data changes as a function of time, the writer may also choose to write it out only on the timestamps where it changes.  If a writer is only outputting on change and is operating in a “chain style” recording, the aux info must be rewritten to the first record of the new file.  This is to ensure that all otd files can be processed in a standalone fashion.",
+      "properties": {
+        "file_generated": {
+            "description": "An ISO8601 string with the time this data file was generated.  This is not necessarily near the same time as the data itself was collected (potentially due to offline processing).",
+            "type": "string"
+        },
+        "original_file": {
+            "description": "If the corresponding data was converted from an existing file, documentation on the name of that file.  Same as parent on first conversion, otherwise carried over from one conversion to the next.",
+            "type": "string"
+        },
+        "parent_file": {
+            "description": "If the corresponding data was converted from an existing file, documentation on the name of that file.",
+            "type": "string"
+        },
+        "writer_sw_name": {
+          "description": "The name of the software used to parse the original file and write this output.",
+          "type": "string"
+        },
+        "writer_sw_version": {
+          "description": "The version of the software used  to parse the original file and write this output.",
+          "type": "string"
+        },
+        "parser_time_offset_sec": {
+          "description": "The number of seconds added to the times in the raw data file, generally to resolve a timing issue on the underlying sensor.  Note that this number can be negative.",
+          "type": "string"
+        },
+        "parser_alt_offset_m": {
+          "description": "The number of meters added to all target heights.  Generally done to resolve bias issues in the underlying data stream.",
+          "type": "string"
+        },
+        "license": {
+          "description": "If any data license applies to this data, the text of the license is given here.",
+          "type": "string"
+        },
+        "data_owner": {
+          "description": "The owning entity of the data.",
+          "type": "string"
+        },
+        "trim_start_time": {
+          "description": "If the file was trimmed, the trim start time.",
+          "type": "string"
+        },
+        "trim_end_time": {
+          "description": "If the file was trimmed, the trim end time.",
+          "type": "string"
+        },
+        "rotation_angle_deg": {
+          "description": "If the data was rotated, the angle at which it was rotated.",
+          "type": "string"
+        },
+        "original_lat_deg": {
+          "description": "If the data was translated, the original latitude of the first point in degrees.",
+          "type": "number",
+          "minimum": -90.0,
+          "maximum": 90.0
+        },
+        "original_lon_deg": {
+          "description": "If the data was translated, the original longitude of the first point in degrees.",
+          "type": "number",
+          "minimum": -180.0,
+          "exclusiveMaximum": 180.0
+        },
+        "original_alt_m_hae": {
+          "description": "If the data was translated, the original altitude of the first point in meters HAE.",
+          "type": "number",
+          "$comment": "Min is the height of the marinara trench.  Max is just beyond geosyncrhonous orbit.",
+          "minimum": -12000,
+          "maximum": 36643248.0
+        },
+        "filters": {
+          "description": "Details on any filters applied to this data set.",
+          "type": "object",
+          "properties": {
+              "age": {
+                  "description": "Details on any track age filtering.",
+                  "type": "object",
+                  "properties": {
+                      "track_min_sec": {
+                          "description": "Denotes the minimum age a track must be in order to be output (in seconds).",
+                          "type": "number"
+                      },
+                      "filtered_tracks": {
+                          "description": "The number of tracks filtered by the age filter.",
+                          "type": "integer",
+                          "minimum": 0
+                      }
+                  },
+                  "required": ["track_min_sec", "filtered_tracks"],
+                  "additionalProperties": false
+              },
+              "agl": {
+                  "description": "Details on any track AGL filtering.",
+                  "type": "object",
+                  "properties": {
+                      "track_min_m": {
+                          "description": "Denotes a filter applied to the original data such that only tracks with any point greater than this given altitude in meters above ground level are output.",
+                          "type": "number"
+                      },
+                      "track_max_m": {
+                          "description": "Denotes a filter applied to the original data such that only tracks with any point less than this given altitude in meters above ground level are output.",
+                          "type": "number"
+                      },
+                      "filtered_tracks": {
+                          "description": "The number of tracks filtered by the AGL filter.",
+                          "type": "integer",
+                          "minimum": 0
+                      }
+                  },
+                  "required": ["filtered_tracks"],
+                  "additionalProperties": false
+              },
+              "classification": {
+                  "description": "Details on any classification filtering.",
+                  "type": "object",
+                  "properties": {
+                      "track_classifications": {
+                          "description": "The classifications that at least one point of the track must be declared in order to be part of the output.",
+                          "type": "array",
+                          "items": {
+                              "type": "string"
+                          }
+                      },
+                      "filtered_tracks": {
+                          "description": "The number of tracks filtered by the classification filter.",
+                          "type": "integer",
+                          "minimum": 0
+                      }
+                  },
+                  "required": ["track_classifications", "filtered_tracks"],
+                  "additionalProperties": false
+              },
+              "ground_speed": {
+                  "description": "Details on any track ground speed filtering.",
+                  "type": "object",
+                  "properties": {
+                      "track_min_mps": {
+                          "description": "Denotes a filter applied to the original data such that only tracks with any point greater than this given ground speed in meters per second are output.",
+                          "type": "number"
+                      },
+                      "track_max_mps": {
+                          "description": "Denotes a filter applied to the original data such that only tracks with any point less than this given ground speed in meters per second are output.",
+                          "type": "number"
+                      },
+                      "filtered_tracks": {
+                          "description": "The number of tracks filtered by the ground speed filter.",
+                          "type": "integer",
+                          "minimum": 0
+                      }
+                  },
+                  "required": ["filtered_tracks"],
+                  "additionalProperties": false
+              },
+              "radius": {
+                  "description": "Details on any radius filtering.",
+                  "type": "object",
+                  "properties": {
+                      "distance_m": {
+                          "description": "The number of meters away from the center at which to filter data.",
+                          "type": "number"
+                      },
+                      "center_x_m": {
+                          "description": "The X component of the center in ECEF (in meters).",
+                          "type": "number"
+                      },
+                      "center_y_m": {
+                          "description": "The Y component of the center in ECEF (in meters).",
+                          "type": "number"
+                      },
+                      "center_z_m": {
+                          "description": "The Z component of the center in ECEF (in meters).",
+                          "type": "number"
+                      },
+                      "filtered_tracks": {
+                          "description": "The number of tracks filtered by the radius filter.",
+                          "type": "integer",
+                          "minimum": 0
+                      }
+                  },
+                  "required": ["distance_m", "center_x_m", "center_y_m", "center_z_m", "filtered_tracks"],
+                  "additionalProperties": false
+              },
+              "velocity": {
+                  "description": "Details on any track velocity filtering.",
+                  "type": "object",
+                  "properties": {
+                      "track_min_mps": {
+                          "description": "Denotes a filter applied to the original data such that a track update must have a total velocity greater than this given value in order to be output.",
+                          "type": "number"
+                      },
+                      "track_max_mps": {
+                          "description": "Denotes a filter applied to the original data such that a track update must have a total velocity less than this given value in order to be output.",
+                          "type": "number"
+                      },
+                      "filtered_tracks": {
+                          "description": "The number of tracks filtered by the velocity filter.",
+                          "type": "integer",
+                          "minimum": 0
+                      }
+                  },
+                  "required": ["filtered_tracks"],
+                  "additionalProperties": false
+              },
+              "total_filtered_tracks": {
+                  "description": "The number of tracks filtered from the parent of this set.",
+                  "type": "integer",
+                  "minimum": 0
+              }
+          },
+          "required": ["total_filtered_tracks"],
+          "additionalProperties": true
+        }
+      },
+      "required": [],
+      "additionalProperties": true
+    },
+    "time_iso8601": {
+      "description": "All time data should follow ISO-8601: https://en.wikipedia.org/wiki/ISO_8601. \nWhile any properly formatted ISO8601 string of millisecond precision is acceptable, writers should strive to use the format to be used corresponds to:\n   YYYYMMDDTHHmmss.fffffffffZ \n Where: \nYYYY = four digit year \nMM = two digit month (01 = January, 12 = December) \nDD = two digit day of the month (01, 02, …, 30, 31) \nHH = two digit hour using 24 hour clock \nmm = two digit minute between 00 and 59 \nss = two digit second between 00 and 60 (where 60 is only used to denote an added leap second) \nfffffffff = sub-second up to 9 (minimum of 3) decimal places (1,000,000,000ths place) for nanosecond precision \nZ = Zulu time; UTC +00:00 \n\nNOTE 1: This timestamp should correspond to the middle of the measurement/integration period from the sensor. \nNOTE 2: Do not zero pad fractional seconds beyond known clock accuracy. \nNOTE 3: This is effectively the time of applicability for the sensor data and the time of measurement for the track data.",
+      "type": "string",
+      "$comment": "It would be nice to validate this... json schema does define a date-time formatter, but it isn't quite our style.  Could maybe go the regex route, making sure we're flexible to the various dialects of 8601.",
+      "examples": [
+        "20200414T163030.123456Z"
+      ]
+    },
+    "track": {
+      "description": "This structure houses data about the track the sensor is tracking.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The track ID should be of type UUID: https://en.wikipedia.org/wiki/Universally_unique_identifier \nThis may be a randomly generated one (most common), or propagated from the underlying data source if available. It must be globally unique.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "examples": [
+            "e6e6d8ad-e721-4a62-a7c8-d4d97a375b00"
+          ]
+        },
+        "label": {
+          "description": "The track label is meant to be a relatively short, human readable string for use in plots and reporting. It does not have to be unique since that is what the track_id is for, but should give enough information to give a human user an idea of what it is. If a common identifier is known (for example a FAA tail number), that may be a good candidate for this field.  Another recommended method is a simple concatenation of a track.class and an integer per track instance may be best.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "classification": {
+          "description": "The classification of this track, typically referring to the aircraft type (for example: manufacturer and model).  \nWhile attempts may be made in the future to standardize categories, for now this is more of a name field than a strict classification hierarchy. \nSome examples of this might be: “dji:phantom4”, “piper:cherokee”, “boeing:747” \nNote 1: While this classification is derived from concatenating various sub fields, aux data should supply all these fields separated out.",
+          "type": "string",
+          "examples": [
+            "dji:phantom4",
+            "piper:cherokee",
+            "boeing:747"
+          ]
+        },
+        "eot": {
+          "description": "A flag indicating that this is the last update for this track.  The data in the record may be a repeat of the last update without the eot field set (for example, due to a timeout or similar) or it may be set to a later time forward projected along the track’s last measured trajectory.  \nIf the underlying source data does not include a corresponding field, a batch mode process may just use the last update in the track.  A real time recorder may impose its own timeout value.  While this value should be set conservatively (suggest several minutes)  This may yield a situation where the source sensor restarts sending data on that track after the time out.  In this case, a batch mode OTD reader should be capable of noticing this discrepancy and repairing the file.",
+          "type": "boolean"
+        },
+        "pos_ecef": {
+          "description": "The position of the track in Earth Centered Earth Fixed coordinates: https://en.wikipedia.org/wiki/ECEF \nThe x, y, z values should be output in meters and must have centimeter level precision.  This generally implies double precision floating point values be used internally (though fixed point solutions may also work).",
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "examples": [
+            [1114787.89, -4841804.32, 3986037.58]
+          ]
+        },
+        "vel_ecef": {
+          "description": "This is the ECEF velocity of the track in meters per second.  Precision need only be to the centimeter per second level.",
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "examples": [
+            [2.234352, 1.801882, 1.1352833e-05]
+          ]
+        },
+        "cov_ecef": {
+          "description": "The track covariance is the reported error for the sensor position.  Normally this is a 6x6 covariance matrix due to the 3D position and 3D velocity components (ECEF, ECEF_dot), however it can be 3x3 in the case of no velocity vector reported from the sensor.  \nThe covariance matrices are symmetric.  This means only the upper or lower triangular portion needs to be stored and transmitted.  We choose to store the lower triangular portion in row-major order. \nThe number of rows and columns of the NxN matrix can be inferred from the length L of the array by writing an equation that takes the total size of the matrix, subtracts off the main diagonal size, divides the result in half, then adds the center diagonal size back on. \nIn other words, for an N x N matrix with L stored values the following equation holds: \nL = N*[(N-1)/2 + 1] \nExamples: \nA 3x3 matrix would be packed [00, 10, 11, 20, 21, 22], with total number of elements L=6 \nA 6x6 matrix would be packed [00, 10, 11, 20, 21, 22, 30, 31, 32, 33, 40, 41, 42, 43, 44, 50, 51, 52, 53, 54, 55], with total number of elements L=21 \nUsers should confirm the correct numbers of values are given for the type. \nNOTE 1: If a covariance can only be generated on the position, but not the velocity for whatever reason, the writer should at least give the 3x3 covariance. \nNOTE 2: Extra precision on these values is typically not helpful for the purposes of analysis.  Writers should strongly consider limiting 6-9 significant digits (single precision floating point) to reduce file size.",
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 6,
+          "$comment": "Could also use a oneof here and do the 3x3 and 6x6 as separate validations",
+          "maxItems": 21
+        },
+        "source_type": {
+          "description": "This is the type of source that generated this data.  It is generally a human readable manufacturer and model for a particular sensor device.  See also notes in track.source_id.",
+          "type": "string",
+          "examples": [
+            "GA9000",
+            "HL1000"
+          ]
+        },
+        "source_id": {
+          "description": "This is the id of the sensor.  If multiple sensors of the same type are present, it must be unique across all files in the chain. \nThe recommended way to accomplish this is to assign the physical sensor a UUID.  The UUID may be a randomly generated one, or a pre-generated one (most common) that is tied to a specific known sensor used in multiple data files.  This would be ideally managed via external means (such as a database or similar) such that the same id could be used across all time.  \nNote 1: The combination of “source_type” and “source_id” must uniquely identify a source within the output and be stable for the entire file or file chain.  A common approach is to use the serial number of the sensor as source_id, which also guarantees it remains stable across many data collections. \nNote 2: As fallback with no external naming infrastructure, separate sensors may use source_type: “UNKNOWN”, where successive sources are assigned a number from 0..n.",
+          "type": "string",
+          "examples": [
+            "e6e6d8ad-e721-4a62-a7c8-d4d97a375b00",
+            "0",
+            "123"
+          ]
+        },
+        "source_pos_ecef": {
+          "description": "The position of the track source in Earth Centered Earth Fixed coordinates: https://en.wikipedia.org/wiki/ECEF.  \nThis is typically a remote sensor of some kind.  \nThe x, y, z values should be output in meters and must have centimeter level precision.  This generally implies double precision floating point values be used internally (though fixed point solutions may also work). \nNote 1: If this value is set and then excluded from subsequent updates, readers can assume the source is remaining stationary.  The position must be updated upon movement of the source. \nNote 2: More detailed information about the source characteristics may be present in the aux data. \nNote 3: If this field is excluded, typically it implies the sensor is co-located to the track.  For example, a GPS device on an aircraft.",
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "examples": [
+            [1115738.72, -4533256.0, 4331282.04]
+          ]
+        },
+        "aux": {
+          "description": "The auxiliary bucket is a generic “catch all” container that can be used to house any detailed track data necessary. It is free form and so should not be counted on.",
+          "properties": {
+            "tail_number": {
+                "description": "The FAA craft tail number.",
+                "type": "string",
+                "$comment": "Can this be subjected to a regex?",
+                "examples": [
+                    "N12345",
+                    "N1234Z",
+                    "N123AZ"
+                ]
+            },
+            "source_track_name": {
+              "description": "Any track name or id assigned by the underlying sensor for identification.",
+              "type": "string"
+            },
+            "coasted": {
+              "description": "An indicator if this track update was not the result of a measurement.",
+              "type": "boolean"
+            },
+            "rcs_dbsm": {
+              "description": "The RCS in dBsm.  This generally applies to tracks generated by radar sensors.",
+              "type": "number"
+            },
+            "manufacturer": {
+              "description": "The manufacturer of the target. For example, 'DJI'.",
+              "type": "string"
+            },
+            "model": {
+              "description": "The model of the target. For example 'Mavic'.",
+              "type": "string"
+            },
+            "update_seq": {
+              "description": "A sequence number counting updates for this track. This includes any coasting of the track independent of the measurements and the end of track message.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "derived_pos": {
+              "description": "This data is optionally derived from the core ECEF positional data.  It is generally excluded when file size is a concern, but included when transmitting data to parties that are unfamiliar with ECEF.",
+              "type": "object",
+              "properties": {
+                  "lat_deg": {
+                      "description": "The latitude of the target in degrees.",
+                      "type": "number",
+                      "minimum": -90.0,
+                      "maximum": 90.0
+                  },
+                  "lon_deg": {
+                      "description": "The longitude of the target in degrees.",
+                      "type": "number",
+                      "minimum": -180.0,
+                      "exclusiveMaximum": 180.0
+                  },
+                  "alt_hae_m": {
+                      "description": "The altitude of the target in meters above the WGS-84 ellipsoid.",
+                      "type": "number"
+                  },
+                  "alt_msl_m": {
+                      "description": "The altitude of the target in meters above mean sea level (EGM96 reference model).",
+                      "type": "number"
+                  },
+                  "alt_agl_m": {
+                      "description": "The altitude of the in meters target above ground level. Note that this height can be inaccurate depending on the underlying terrain data. Underlying dataset is SRTM GL1.",
+                      "type": "number"
+                  }
+              },
+              "required": ["lat_deg", "lon_deg", "alt_hae_m"],
+              "additionalProperties": false
+            },
+            "derived_vel": {
+              "description": "This data is optionally derived from the core ECEF velocity vector, when available.  This data should never be included when the vel_ecef field is excluded.  It is generally excluded when file size is a concern, but included when transmitting data to parties that are unfamiliar with the transformations needed to derive this data.",
+              "type": "object",
+              "properties": {
+                  "ground_speed_mps": {
+                      "description": "The ground speed of the aircraft in meters per second.",
+                      "type": "number",
+                      "minimum": 0.0
+                  },
+                  "vertical_speed_mps": {
+                      "description": "The vertical speed of the aircraft in meters per second.",
+                      "type": "number"
+                  },
+                  "heading_deg": {
+                      "description": "The heading of the target relative to true north in degrees, clockwise such that 0 is North, 90 is due East, 180 is due South, and 270 is due West.",
+                      "type": "number",
+                      "minimum": 0.0,
+                      "exclusiveMaximum": 360.0
+                  }
+              },
+              "required": ["ground_speed_mps", "vertical_speed_mps", "heading_deg"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      "required": ["id", "label", "eot", "pos_ecef"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["time_iso8601", "track"],
+  "additionalProperties": false
+}
