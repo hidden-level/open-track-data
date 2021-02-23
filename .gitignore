@@ -21,7 +21,6 @@
 *.a
 *.mat
 *.fig
-*.otd
 BUILD_VERSION
 patches/*.patch
 *.pickle

@@ -1,7 +1,7 @@
 
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://hiddenlevel.com/schemas/otd_record_schema.json",
+  "$id": "https://github.com/hidden-level/open-track-data/blob/main/versions/1.0.0/schema.json",
   "title": "OtdRecord",
   "description": "A schema definition for an OTD record.",
   "type": "object",
