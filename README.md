@@ -12,8 +12,9 @@ OTD is primarily intended for data at rest and uses [RFC-7464 jsonseq](https://t
 
 The standard itself is comprised of 2 major documents:
 
-1.  A json schema file describing the JSON structures in detail.
-2.  A supplementary markdown file.
+1.  A markdown file containing the standard.
+2.  A json schema file describing the JSON record structures in detail.
+
 
 It also holds some basic examples of valid files used for parsing.
 
@@ -39,6 +40,10 @@ And yes, we are well aware of [XKCD 927](https://xkcd.com/927/).
 
 ### 1.0.0
 This is simply an exact replica of the Offline Track Data format.  It is intended to be a baseline for expansion to future versions with the help of the community.
+
+* [1.0.0 Standard](./versions/1.0.0/offline_track_data.md)
+* [Record JSON Schema](./versions/1.0.0/schema.json)
+* [Data example](./examples/1.0.0/multi_craft_sim.otd)
 
 ## Roadmap
 See [ROADMAP.md](./ROADMAP.md)
